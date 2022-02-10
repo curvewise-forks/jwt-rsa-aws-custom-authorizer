@@ -55,11 +55,16 @@ module.exports.authenticate = (params) => {
             const signingKey = key.publicKey || key.rsaPublicKey;
             return jwt.verify(token, signingKey, jwtOptions);
         })
-        .then((decoded)=> ({
+        .then((decoded)=> {
+          if(!(decoded.permissions && decoded.permissions.includes('write:data'))){
+            throw new Error(`User is missing write:data permissions`);
+          }
+          return {
             principalId: decoded.sub,
             policyDocument: getPolicyDocument('Allow', params.methodArn),
             context: { scope: decoded.scope }
-        }));
+          }
+        });
 }
 
  const client = jwksClient({
