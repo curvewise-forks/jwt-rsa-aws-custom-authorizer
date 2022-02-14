@@ -56,6 +56,7 @@ module.exports.authenticate = (params) => {
             return jwt.verify(token, signingKey, jwtOptions);
         })
         .then((decoded)=> {
+          // TODO: pull the required permission from the environment
           if(!(decoded.permissions && decoded.permissions.includes('write:data'))){
             throw new Error(`User is missing write:data permissions`);
           }
